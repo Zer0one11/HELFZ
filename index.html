@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .credits {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .credits .made-by {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .credits .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .credits .social-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .credits .social-link:hover {
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .result-container {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .download-options {
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .quality-btn {
+            padding: 8px 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quality-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .download-btn {
+            padding: 12px 25px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .download-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .video-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .thumbnail {
+            width: 120px;
+            height: 90px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .video-title {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        @media (max-width: 768px) {
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .video-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .thumbnail {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .credits .social-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="credits">
+            <div class="made-by">Сайт был сделан HELFZом</div>
+            <div class="social-links">
+                <a href="https://discord.com/users/helfz_" class="social-link" target="_blank">
+                    <i class="fab fa-discord"></i> My Discord: helfz_
+                </a>
+                <a href="https://tiktok.com/@.HELFZsasal" class="social-link" target="_blank">
+                    <i class="fab fa-tiktok"></i> My TikTok: @.HELFZsasal
+                </a>
+                <a href="https://t.me/HELFZ" class="social-link" target="_blank">
+                    <i class="fab fa-telegram"></i> My Telegram: @HELFZ
+                </a>
+            </div>
+        </div>
+        
+        <h1><i class="fab fa-youtube"></i> YouTube Downloader</h1>
+        
+        <div class="buttons">
+            <button class="btn btn-primary" id="videoBtn">
+                <i class="fas fa-video"></i> Видео
+            </button>
+            <button class="btn btn-primary" id="audioBtn">
+                <i class="fas fa-music"></i> Аудио
+            </button>
+            <button class="btn btn-primary" id="hdBtn">
+                <i class="fas fa-hd"></i> HD Видео
+            </button>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" class="input-field" id="urlInput" placeholder="Вставьте ссылку на YouTube видео...">
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Обработка вашего запроса...</p>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="video-info" id="videoInfo">
+                <img class="thumbnail" id="thumbnail" src="" alt="Превью видео">
+                <h3 class="video-title" id="videoTitle"></h3>
+            </div>
+            
+            <div class="download-options" id="downloadOptions">
+                <h4>Выберите качество:</h4>
+                <div id="qualityButtons"></div>
+                <button class="download-btn" id="downloadBtn">
+                    <i class="fas fa-download"></i> Скачать
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const videoBtn = document.getElementById('videoBtn');
+        const audioBtn = document.getElementById('audioBtn');
+        const hdBtn = document.getElementById('hdBtn');
+        const urlInput = document.getElementById('urlInput');
+        const loading = document.getElementById('loading');
+        const resultContainer = document.getElementById('resultContainer');
+        const videoInfo = document.getElementById('videoInfo');
+        const thumbnail = document.getElementById('thumbnail');
+        const videoTitle = document.getElementById('videoTitle');
+        const downloadOptions = document.getElementById('downloadOptions');
+        const qualityButtons = document.getElementById('qualityButtons');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        let currentMode = 'video'; // video, audio или hd
+        
+        // Обработчики кнопок
+        videoBtn.addEventListener('click', () => {
+            currentMode = 'video';
+            resetUI();
+            urlInput.focus();
+        });
+        
+        audioBtn.addEventListener('click', () => {
+            currentMode = 'audio';
+            resetUI();
+            urlInput.focus();
+        });
+        
+        hdBtn.addEventListener('click', () => {
+            currentMode = 'hd';
+            resetUI();
+            urlInput.focus();
+        });
+        
+        // Обработчик ввода URL
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processURL();
+            }
+        });
+        
+        // Сброс интерфейса
+        function resetUI() {
+            resultContainer.style.display = 'none';
+            downloadOptions.style.display = 'none';
+            urlInput.value = '';
+        }
+        
+        // Имитация обработки URL
+        function processURL() {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Пожалуйста, введите URL видео');
+                return;
+            }
+            
+            // Показать загрузку
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            // Имитация задержки запроса
+            setTimeout(() => {
+                loading.style.display = 'none';
+                showResult(url);
+            }, 1500);
+        }
+        
+        // Показать результат
+        function showResult(url) {
+            const videoId = extractVideoId(url);
+            
+            if (!videoId) {
+                alert('Некорректный URL YouTube видео');
+                return;
+            }
+            
+            thumbnail.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+            videoTitle.textContent = "Пример видео (реальный заголовок будет получен от API)";
+            
+            resultContainer.style.display = 'block';
+            showDownloadOptions();
+        }
+        
+        // Показать опции скачивания
+        function showDownloadOptions() {
+            qualityButtons.innerHTML = '';
+            
+            if (currentMode === 'audio') {
+                const qualities = [
+                    { quality: '128 kbps', format: 'mp3' },
+                    { quality: '192 kbps', format: 'mp3' },
+                    { quality: '256 kbps', format: 'mp3' },
+                    { quality: '320 kbps', format: 'mp3' }
+                ];
+                
+                qualities.forEach(q => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quality-btn';
+                    btn.textContent = `${q.quality} (${q.format})`;
+                    btn.addEventListener('click', () => selectQuality(q));
+                    qualityButtons.appendChild(btn);
+                });
+            } else {
+                const qualities = currentMode === 'hd' ? [
+                    { quality: '1080p', format: 'mp4' },
+                    { quality: '720p', format: 'mp4' },
+                    { quality: '480p', format: 'mp4' }
+                ] : [
+                    { quality: '720p', format: 'mp4' },
+                    { quality: '480p', format: 'mp4' },
+                    { quality: '360p', format: 'mp4' }
+                ];
+                
+                qualities.forEach(q => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quality-btn';
+                    btn.textContent = `${q.quality} (${q.format})`;
+                    btn.addEventListener('click', () => selectQuality(q));
+                    qualityButtons.appendChild(btn);
+                });
+            }
+            
+            setTimeout(() => {
+                downloadOptions.style.display = 'block';
+            }, 100);
+        }
+        
+        // Выбор качества
+        function selectQuality(quality) {
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.style.backgroundColor = 'white';
+                btn.style.color = 'inherit';
+            });
+            
+            event.target.style.backgroundColor = 'var(--primary)';
+            event.target.style.color = 'white';
+            
+            downloadBtn.innerHTML = `<i class="fas fa-download"></i> Скачать ${quality.quality} (${quality.format})`;
+        }
+        
+        // Извлечение ID видео
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+        
+        // Обработчик кнопки скачивания
+        downloadBtn.addEventListener('click', () => {
+            alert('В реальном приложении здесь будет скачивание файла. Этот сайт - демонстрация интерфейса.');
+        });
+    </script>
+</body>
+</html>
